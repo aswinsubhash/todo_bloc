@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../cubits/cubits.dart';
+import '../../../cubits/todo_filter/todo_filter_cubit.dart';
+import '../../../cubits/todo_search/todo_search_cubit.dart';
 import '../../../models/todo_model.dart';
 import '../../../utils/debounce.dart';
 

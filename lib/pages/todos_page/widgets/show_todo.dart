@@ -11,82 +11,51 @@ class ShowTodos extends StatelessWidget {
   Widget build(BuildContext context) {
     final todos = context.watch<FilteredTodoCubit>().state.filteredTodos;
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<TodoListCubit, TodoListState>(
-          listener: (context, state) {
-            context.read<FilteredTodoCubit>().setFilteredTodos(
-                  context.read<TodoFilterCubit>().state.filter,
-                  state.todos,
-                  context.read<TodoSearchCubit>().state.searchTerm,
-                );
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: todos.length,
+      separatorBuilder: (BuildContext context, int index) {
+        return const Divider(color: Colors.grey);
+      },
+      itemBuilder: (BuildContext context, int index) {
+        // return Text(
+        //   todos[index].desc,
+        //   style:const TextStyle(fontSize: 20.0),
+        // );
+        return Dismissible(
+          background: showBackground(0),
+          secondaryBackground: showBackground(1),
+          key: ValueKey(todos[index].id),
+          child: TodoItem(todo: todos[index]),
+          onDismissed: (_) {
+            context.read<TodoListCubit>().removeTodo(todos[index]);
           },
-        ),
-        BlocListener<TodoFilterCubit, TodoFilterState>(
-          listener: (context, state) {
-            context.read<FilteredTodoCubit>().setFilteredTodos(
-                  state.filter,
-                  context.read<TodoListCubit>().state.todos,
-                  context.read<TodoSearchCubit>().state.searchTerm,
+          confirmDismiss: (_) {
+            return showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Are you sure?'),
+                  content: const Text('Do you really want to delete?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context,
+                          false), // By giving false, confirmDismiss callback returns false.
+                      child: const Text('No'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context,
+                          true), // By giving true, confirmDismiss callback returns true.
+                      child: const Text('Yes'),
+                    ),
+                  ],
                 );
+              },
+            );
           },
-        ),
-        BlocListener<TodoSearchCubit, TodoSearchState>(
-          listener: (context, state) {
-            context.read<FilteredTodoCubit>().setFilteredTodos(
-                  context.read<TodoFilterCubit>().state.filter,
-                  context.read<TodoListCubit>().state.todos,
-                  state.searchTerm,
-                );
-          },
-        ),
-      ],
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemCount: todos.length,
-        separatorBuilder: (BuildContext context, int index) {
-          return const Divider(color: Colors.grey);
-        },
-        itemBuilder: (BuildContext context, int index) {
-          // return Text(
-          //   todos[index].desc,
-          //   style:const TextStyle(fontSize: 20.0),
-          // );
-          return Dismissible(
-            background: showBackground(0),
-            secondaryBackground: showBackground(1),
-            key: ValueKey(todos[index].id),
-            child: TodoItem(todo: todos[index]),
-            onDismissed: (_) {
-              context.read<TodoListCubit>().removeTodo(todos[index]);
-            },
-            confirmDismiss: (_) {
-              return showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Are you sure?'),
-                    content: const Text('Do you really want to delete?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context,
-                            false), // By giving false, confirmDismiss callback returns false.
-                        child: const Text('No'),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context,
-                            true), // By giving true, confirmDismiss callback returns true.
-                        child: const Text('Yes'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          );
-        },
-      ),
+        );
+      },
     );
   }
 }

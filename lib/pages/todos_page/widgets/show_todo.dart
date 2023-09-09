@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../cubits/cubits.dart';
+import '../../../blocs/blocs.dart';
 import 'todo_item.dart';
 
 class ShowTodos extends StatelessWidget {
@@ -9,7 +9,7 @@ class ShowTodos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final todos = context.watch<FilteredTodoCubit>().state.filteredTodos;
+    final todos = context.watch<FilteredTodosBloc>().state.filteredTodos;
 
     return ListView.separated(
       shrinkWrap: true,
@@ -28,7 +28,9 @@ class ShowTodos extends StatelessWidget {
           key: ValueKey(todos[index].id),
           child: TodoItem(todo: todos[index]),
           onDismissed: (_) {
-            context.read<TodoListCubit>().removeTodo(todos[index]);
+            context
+                .read<TodoListBloc>()
+                .add(RemoveTodoEvent(todo: todos[index]));
           },
           confirmDismiss: (_) {
             return showDialog(

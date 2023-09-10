@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_bloc/blocs/blocs.dart';
+import '../blocs.dart';
 
 import '../../models/todo_model.dart';
 
